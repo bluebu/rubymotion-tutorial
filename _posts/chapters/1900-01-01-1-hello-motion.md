@@ -7,29 +7,29 @@ categories:
 ---
 # Hello Motion
 
-## Installation
+##  安装
 
-[RubyMotion][rm] is a commercial product from HipByte, a company founded by the incredible guys responsible for [MacRuby][macruby]. When you [purchase a license][buy] to RubyMotion, you will receive a key and an installer app which will take care of everything. You also need to get [Xcode][xcode] from the Mac App Store. Xcode installs some developer tools RubyMotion relies on (such as the iOS Simulator), but you don't actually make RubyMotion projects inside the IDE.
+[RubyMotion][rm] 是 HipByte 公司的商业产品, 该公司由[MacRuby][macruby]负责人创建. 当你购买了[RubyMotion许可证][buy] , 你会收到一个key和一个安装程序. 同时你也需要从Mac App Store安装[Xcode][xcode]. Xcode 会安装一些RubyMotion所依赖的开发工具(比如iOS Simulator), 但是实际上你不会在Xcode中写RubyMotion项目的.
 
-Instead, RubyMotion relies on command-line tools and you're welcome to use any text editor of your choice. There are [addons][packages] for many popular editors which help with things like code completion and build integration. RubyMotion also builds on top of existing Ruby tools like RubyGems and Rake, so if you're coming from a Ruby background you should feel right at home.
+相反的, RubyMotion 会更多依赖命令行工具， 并且你可以选择使用任何你喜欢的编辑器. 可以利用[插件][packages]对主流编辑器扩展，用以辅助代码实现和编译集成等. RubyMotion建立在已有的Ruby工具上，例如RubyGems 和 Rake, 所以如果你已有Ruby经验，那么你会有种舒服到家的感觉.
 
-So once everything is installed, you're ready to take the dive. Read on!
+现在，一切已经安装好了，已经准备好尝试RubyMotion了吧，好戏马上上演!
 
-## The First App
+## 你的第一个应用
 
-Open your terminal and navigate to where you want to create your RubyMotion projects. Run:
+打开控制台, 切换到存放RubyMotion项目的目录. 执行以下命令:
 
 ```ruby
 motion create HelloMotion
 ```
 
-The `motion` command is one half of the RubyMotion toolbox; it's equivalent to the `rails` command, if you're familiar with that. It handles managing projects and the RubyMotion tools themselves (from time to time, you may be reminded to run `motion update`).
+`motion` 命令，是RubyMotion提供的工具集命令之一; 它等价于 `rails` 命令, 你应该已经很熟悉`rails` 了. 该命令用来管理项目和RubyMotion工具本身(有时你可能会被提醒执行`motion update`).
 
-`motion create` makes a `HelloMotion` folder and some files inside, so go ahead and `cd` into it (`cd ./HelloMotion`). You'll run all of the subsequent commands from this location, so definitely keep a terminal window/tab open to it.
+`motion create` 创建了一个 `HelloMotion` 目录，这个目录内部同时也创建了一些文件, 那么大胆地 `cd` 进入这个目录 (`cd ./HelloMotion`). 所有后续口令都会在这个目录中执行，所以毫无疑问地, 我们需要对这个目录保留一个终端窗口/标签.
 
-We'll talk about just two of the files it creates: `Rakefile` and `./app/app_delegate.rb`.
+首先, 我们先介绍一下创建地两个文件: `Rakefile` 和 `./app/app_delegate.rb`.
 
-`Rakefile` is where you handle your app configuration (stuff like what the app's named, what resources to include, etc) and library imports (so 3rd-party gems or other local sources). It's used by the other half of the RubyMotion workflow, the `rake` command. As of RubyMotion 1.11, `Rakefile` will be generated to look like:
+`Rakefile` 用来处理项目的配置(例如应用名称, 包含资源等信息), 库文件的导入 (第三方gems或者本地资源). `rake` 命令会使用这个文件, 而 `rake` 就是RubyMotion整个工作流的另外一个口令. 对于RubyMotion 1.11, 生成的`Rakefile`应该是这个样子:
 
 ```ruby
 $:.unshift("/Library/RubyMotion/lib")
@@ -41,19 +41,19 @@ Motion::Project::App.setup do |app|
 end
 ```
 
-If you're not intimately familiar with Ruby, the first thing you may think is, "Wait...`$:.unshift` who?" Strange-looking indeed. What this line does is tell Ruby, "When we use `require`s, also look in the '/Library/RubyMotion/lib' directory to find what we're requiring". 'motion/project' resides there, and without the initial `$:.unshift` nothing would be found!
+如果你不是很熟悉Ruby的话, 你的第一感觉应该是, "等等...`$:.unshift` 这是什么飞机?" 确实看起来挺奇怪的. 这行代码用来告诉Ruby, "当我们使用`require`时候, 同时也遍历一下'/Library/RubyMotion/lib'这个目录, 看能否找到我们声明`require`的". 下方的require 'motion/project', 要是没有前面的 `$:.unshift` , Ruby就会找不到我们想要的!
 
-So we `require 'motion/project'`, which gives us proper access to RubyMotion and setting up our app in the `.setup` block. There are all sorts of properties for `app`, which as the auto-generated comment says can be listed using `rake config`. By default, RubyMotion sets the `.name` to our project's name, so that looks good.
+声明了`require 'motion/project'` 之后, 我们才可以在项目中正确的访问RubyMotion, 以及在`.setup`代码块中设置我们的项目. 这里有`app`中所有的属性和参数, 执行`rake config`可以列出自动生成的注释. 默认下By default, RubyMotion 将 `.name` 设置成我们项目的名称, 嗯，看起来不错.
 
-Wait, why do we have a `Rakefile` at all? Well, RubyMotion uses `rake` for all of its functions, and the `rake` command runs the `Rakefile` in directory you run it in. The `Rakefile` is supposed to define the set of "tasks" which can be attached to rake (`rake <task>`), but these are actually created for us when we `require "motion/project"`.
+等等, 我们究竟为什么需要一个 `Rakefile` ? 好的, RubyMotion 使用 `rake` 来调用所有的方法, 而`rake` 命令会执行所在目录的 `Rakefile`.`Rakefile` 应当定义一组"tasks", 这些"task"可以用来附加到rake执行 (`rake <task>`), 但是当我们 `require "motion/project"`时候 , 这些都已经创建了.
 
-Give it a go! Run `rake` in your terminal and you should have a blank iPhone simulator pop up. Additionally, your terminal is now running an interactive console in which you can execute new code on the fly.
+试一试! 在你的控制台中执行 `rake` , 应当弹出一个空白的 iPhone 模拟器. 此外, 你的终端此刻应该运行着一个交互控制台, 里面可以让你在运行时执行新的代码.
 
 ![hello](images/0.png)
 
-"Hooray!" you may exclaim...but how did that happen? How did we get from `app.name = 'HelloMotion'` to an iPhone popping up?
+"牛逼!" 你可能会情不自禁地呼喊着...但是这是怎么发生地呢? 我们是如何通过 `app.name = 'HelloMotion'` 来弹出一个 iPhone 模拟器?
 
-Turns out RubyMotion's `App` object has some sensible defaults, such as (most importantly) recursively including all Ruby files in `./app`. Remember that `app_delegate.rb` I mentioned earlier? Turns out that guy got included when we compiled our app! Let's take a look:
+可以看出RubyMotion的 `App` 对象拥有许多明显的约定, 比如 (最重要地) 递归 `./app` 下所有地Ruby文件. 记得我们早先提及的 `app_delegate.rb` 吗? 很明显当我们编译我们的项目时候, 这家伙也包含进去了! 让我们来看看:
 
 ```ruby
 class AppDelegate
@@ -63,9 +63,9 @@ class AppDelegate
 end
 ```
 
-Hmm, all that did was define an `AppDelegate` class with one method. There's not even a superclass, how does this do anything?!
+嗯…, 这家伙所做的事情就是声明了一个 包含一个方法的`AppDelegate` 类. 甚至连一个父类都没有, 有毛用啊?!
 
-Well, run that `rake config` command real quick. It'll spit out a bunch of settings and information, but what we're interested in is this:
+好吧, 快速执行一下 `rake config` 命令. 它将打印出一坨设置和信息, 但是我们感兴趣的是这个:
 
 ```ruby
 ...
@@ -73,7 +73,7 @@ delegate_class         : "AppDelegate"
 ...
 ```
 
-Whoa buddy, there's our "unimportant" AppDelegate! RubyMotion actually looks for a class with the name we assign as `delegate_class` and uses that in launching our app. We could've called our class `SuperAppDelegate` and changed our `Rakefile` as such:
+哇哦, 宝贝, 我们这 "不重要的" AppDelegate 在这呢! RubyMotion 实际上会寻找这个delegate_class同名的类, 然后启动app时候调用这个类. 我们也可以把这个类改为 `SuperAppDelegate` , 如下修改我们的 `Rakefile`:
 
 ```ruby
 Motion::Project::App.setup do |app|
@@ -82,15 +82,15 @@ Motion::Project::App.setup do |app|
 end
 ```
 
-So...what is a delegate? In iOS-land, when the user launches our app the system sets up a bunch of stuff for us. We need to give the OS an object which can respond to different events during that process; we refer to that object as the "application delegate". It gets callbacks for when the app starts, ends, goes to the background, gets a push notification, all sorts of fun stuff.
+那么, delegate 是什么? 在 IOS世界, 当用户启动app时候, 提供一些应用程序级别的状态的回调. 我们需要给操作系统提供一个对象, 这个对象在此过程中可以响应不同的事件; 我们将这个对象，称之为"应用程序委托类"(application delegate). 当app处于启动, 终止, 转为后台运行, 接收到一个推送通知, 等这些预定义情况下, 系统就会回调这个对象来完成相应的任务.
 
-In the `motion` generated code, we only implement `def application(application, didFinishLaunchingWithOptions: launchOptions)`. It looks a little different than normal Ruby because of the `didFinishLaunchingWithOptions` label shoved in the middle...what's up with that? Well, time for a short history lesson.
+在 `motion` 生成的代码里, 我们仅仅实现了 `def application(application, didFinishLaunchingWithOptions: launchOptions)`. 这厮看起来有点和普通Ruby写法不太一样啊, 都是因为夹杂在中间 `didFinishLaunchingWithOptions` 这货...为什么? 好吧, 事情是这样的, 很久很久以前....
 
-In most languages, functions look like this: `obj.makeBox(origin, size)`. This can be a bit of a pain because now you need to look up the implementation of that function and figure out what variables go where. Objective-C uses "named parameters" to solve this problem. In Objective-C, that same function looks like this: `[obj makeBoxWithOrigin: origin andSize: size];`. See how each variable directly proceeds the part of the function name which refers to it, removing ambiguity? Pretty clever. We refer to those functions by putting colons in place of variable names, like so: `makeBoxWithOrigin:andSize:`.
+大多数语言里, 方法看起来是这个样子: `obj.makeBox(origin, size)`. 这样有些令人讨厌, 因为你需要去阅读下这个方法的具体实现, 然后找出里面有哪些变量, 并指向何处. Objective-C 使用 "命名参数" 去解决这个问题. 在 Objective-C 里面, 这个方法则变成这样: `[obj makeBoxWithOrigin: origin andSize: size];`.将参数相关信息附加到方法名中, 看清楚是如何来避免不确定性的了吧? 相当聪明. 我们参照这些方法, 并通过使用冒号来替代变量名, 就变成这样: `makeBoxWithOrigin:andSize:`.
 
-In Ruby, named arguments don't exist; it has traditional methods like `obj.make_box(origin, size)`. RubyMotion decided to add named arguments to its implementation of Ruby so the original Apple APIs were compatible, like so: `obj.makeBox(origin, andSize: size)`. That `andSize` isn't just sugar; it's a real part of the method name. `obj.call_method(var1, withParam: var2)` is totally different than `obj.call_method(var1, withMagic: var2)`, despite their normal Ruby forms looking like `obj.call_method`. [Named arguments *do* exist in Ruby 2.0, but RubyMotion is currently compatible with Ruby 1.9.3]
+在Ruby里面, 根本没有"命名参数"; 它使用的传统的方法, 就像 `obj.make_box(origin, size)`. RubyMotion 决定将"命名参数"添加到Ruby里,  这样就可以兼容原生的苹果API, 像这样: `obj.makeBox(origin, andSize: size)`. 那个 `andSize` 不是语法糖; 确确实实是方法名的一部分. `obj.call_method(var1, withParam: var2)` 和 `obj.call_method(var1, withMagic: var2)` 是完全不一样的, 尽管从正常的Ruby形式看起来像是 `obj.call_method`. [Ruby 2.0 确实存在命名参数, 但是RubyMotion 目前兼容的是1.9.3]
 
-Anyway, back to the main plot. `application:didFinishLaunchingWithOptions:` is called when the system finishes setting up the app and becomes ready for us to do our own setup:
+不管怎样, 回到我们的主线来. 当系统完成程序启动时, `application:didFinishLaunchingWithOptions:` 会被调用, 而且即将运行我们所创建的代码:
 
 ```ruby
 def application(application, didFinishLaunchingWithOptions:launchOptions)
@@ -98,9 +98,9 @@ def application(application, didFinishLaunchingWithOptions:launchOptions)
 end
 ```
 
-For now, just assume it will always return `true`. Some apps may want to use `launchOptions` to determine if the app should be started or not, but most of the time you won't do that.
+到现在, 仅仅假设程序永远返回 `true`. 一些应用可能想使用 `launchOptions` 来决定应用是否应该开始运行, 但是大多说情况下你不会那样做的.
 
-Now we understand how our app boots up and have our entry point. Let's...do something? Change your `application:didFinishLaunchingWithOptions:` to look like:
+现在我们理解了项目如何启动的, 并且找到了项目开发的切入点. 要不…让我们来做点事情? 修改你的 `application:didFinishLaunchingWithOptions:` 如下:
 
 ```ruby
 def application(application, didFinishLaunchingWithOptions:launchOptions)
@@ -114,23 +114,23 @@ def application(application, didFinishLaunchingWithOptions:launchOptions)
 end
 ```
 
-See what we added? First, those three lines about a `UIAlertView`. `UIAlertView`s are the blue popups you see sometimes while using iOS (logging in to the iTunes Store, pre-iOS5 push notifications, etc). We create one, give it a message, then show it.
+来看看我们都添加什么了? 首先, 有3行关于`UIAlertView`的代码. `UIAlertView`s 就是有时候使用IOS看到的蓝色弹层 (登录到iTunes Store, pre-iOS5 推送信息, 等等). 我们创建了一个, 并设置一个message, 然后 show 出来.
 
-Next, `puts` is your basic logging statement. You can pass it a normal string to print, or any normal object which you want to some information about.
+接下来, `puts` 是最基本的声明日志的方式. 你可以传递一个普通的字符串打印出来, 或者传递一个普通的对象, 来获取这个对象更多的信息.
 
-Run `rake` again and...BAM, an unclosable blue popup! And in your terminal window, you should see "Hello again!" output in the console. Not a whole lot going on, but...at least now we know how it all got there.
+再一次执行 `rake`, 然后...BAM, 一个无法关闭的蓝色弹层!  而且在你的终端窗口, 你应该在控制台里看到 "Hello again!". 并没有非常大的进步, 但是...至少现在我们知道了它是如何实现的.
 
 ![hello](images/1.png)
 
-What did we learn?
+学到了什么?
 
-- Create RubyMotion apps with `motion create <ProjectName>`
-- Configure your app and import libraries inside `Rakefile`
-- Apps need a delegate, and RubyMotion needs you to set its value (or use the default) in the `Rakefile`
-- App delegates use `application:didFinishLaunchingWithOptions:` as the first entry point.
-- Run your app using `rake` while inside the project directory.
+- 通过 `motion create <ProjectName>` 创建 RubyMotion 应用
+- 在`Rakefile`里, 配置你的应用, 导入依赖库
+- 应用程序需要一个委托, RubyMotion 需要你在 `Rakefile` 设置它的值(或者使用默认值)
+- AppDelegate 使用 `application:didFinishLaunchingWithOptions:` 作为首个进入点.
+- 在项目目录中使用 `rake` 运行你的应用.
 
-[Head to the next chapter and put some Views on the screen!](/2-views)
+[前往下一章: 在屏幕上添加Views!](/2-views)
 
 [rm]: http://www.rubymotion.com/
 
