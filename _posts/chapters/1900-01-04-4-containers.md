@@ -6,21 +6,23 @@ categories:
 - chapters
 ---
 
-# Containers
+# 容器 Containers
 
-Now that we have a big white screen on our hands, let's dress it up.
+现在我们有了一个白色屏幕, 让我们装饰一下吧.
 
-If you've used more than a handful of iOS apps, you've undoubtedly noticed some visual similarities. Primarily, many apps have a black bottom bar with tabs and a blue top bar with a title. These are the standard "containers" in iOS, known as `UITabBarController` and `UINavigationController` respectively. We're going to play with them.
+如果你已经使用过一些iOS应用程序，你无疑会注意到它们视觉上有些相似。首先，许多应用程序有一个黑色底部标签栏, 和一个带有标题的蓝色顶部导航栏. 这些在iOS里都是标准 "容器" 
 
-These containers are `UIViewController` subclasses which actually manage other `UIViewController`s. Kind of wild, right? They have a `view` just like regular controllers, to which these "children" controllers' views are added as subviews. Thankfully, we never really have to worry about *how* that works, as these container controllers have pleasant APIs that deal with controllers, not views.
+有一个标签和一个蓝色的顶杆与黑底栏标题。这些都是标准的“容器”在iOS，分别称为 `UITabBarController` 和 `UINavigationController`。我们马上就要来接触这些容器.
 
-## UINavigationController
+这些容器都是 `UIViewController` 的子类, 而实际上又管理着其他`UIViewController`. 很生猛, 对吧? 他们就像普通的控制器一样有一个`视图`, 而这些 "子控制器" 就会被当作子视图添加进去. 幸运的是, 我们从来都不需要真正关心这货*如何*运行的, 这些容器控制器都有友好的API, 可以用来处理控制器, 而不是视图.
 
-Let's start with the most common container, `UINavigationController`. It manages its children controllers as a stack, pushing and popping them along a visually horizontal path. Mail.app uses one for its flow from Accounts -> An Account -> Inbox -> Message. The navigation controller is really nice in that automatically it'll handle the back button for you; all you need to do is push and pop controllers.
+## 导航控制器 UINavigationController
+
+让我们从最常用的容器开始, 导航控制器 `UINavigationController`. 在对象管理上, 导航控制器使用了导航堆栈, 沿着一个可以看的到的水平的路径将它们进行推入或者弹出. Mail.app 就使用了这个流程: 账号 -> 某一个账号 -> 收件箱 -> 邮件. 导航控制器非常好用, 它会自动的替你操作回退按钮; 你所要做的事情就是推入或者弹出控制器.
 
 ![Navigation controller in Mail.app](images/nav_bar.png)
 
-In `AppDelegate`, change our `rootViewController` assignment to use a `UINavigationController`:
+回到 `AppDelegate`, 将我们的 `rootViewController` 改为使用一个 `UINavigationController`:
 
 ```ruby
   ...
@@ -29,9 +31,9 @@ In `AppDelegate`, change our `rootViewController` assignment to use a `UINavigat
   ...
 ```
 
-`initWithRootViewController` will take the controller passed to it and start the stack with it.
+`initWithRootViewController` 会将controller传值进导航控制器, 并且还会随之启动一个栈.
 
-And make one more change before we run the app, in `TapController`:
+在运行应用之前, 再在 `TapController` 多做点修改:
 
 ```ruby
   ...
@@ -41,11 +43,15 @@ And make one more change before we run the app, in `TapController`:
   ...
 ```
 
-`rake` and check out our slightly prettier app:
+`rake` 然后再看看我们变得稍微有点好看的应用:
 
 ![Navigation controller](images/1.png)
 
-Sweet. Now let's make it do something. We're going to add a navigation bar button that pushes more instances of `TapController`s onto the navigation controller stack.
+不错. 现在让我们让它做点事情. 我们会添加一个导航栏按钮, 这个按钮会将更多的 `TapController` 实例推入到导航堆栈里.
+
+实际上, 
+
+你可以把按钮放在屏幕的顶部的导航栏。例如,邮件。应用这个“编辑”按钮。这些按钮是“UIBarButtonItem”的实例,有大量的配置选项(想使用文本吗?一个图像?一个系统图标?各种各样的有趣的东西)。
 
 You can actually put buttons in the navigation bar at the top of the screen. For example, Mail.app does this for the "Edit" button. These buttons are instances of `UIBarButtonItem`, which has loads of configuration options (want to use text? an image? a system icon? all sorts of fun stuff).
 

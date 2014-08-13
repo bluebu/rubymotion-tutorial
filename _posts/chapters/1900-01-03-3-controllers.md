@@ -6,33 +6,33 @@ categories:
 - chapters
 ---
 
-# Controllers
+# 控制器 Controllers
 
-We've done some work with views, but they are but one leg of the "Model-View-Controller" paradigm the iOS SDK uses. That sounds really fancy, but it's actually pretty simple.
+我们已经完成了一些视图层的工作, 但是这些只是 iOS SDK采用的 MVC 范例当中的一部分. 这听起来真的很花哨，但它实际上是非常简单的.
 
-The idea is that in your code you should have three types of classes: views (which yup, you've already seen), models (which represent and handle data), and....controllers.
+简单来说，你的代码，你应该有三种类型：视图（是的，你已经看到过）, 模型（数据的表现和处理）, 还有…控制器.
 
-So, what are controllers? They're objects which act as a "layer" between models and views, interpreting events from the user to change the models and update the views in response. In a perfectly coded world, when you tap a button the controller intercepts that event, updates a property of the data, and changes the view to reflect the new data.
+那么, 什么是控制器? 它们是位于模型和视图之间的"层"， 处理从用户传递过来的事件, 更新模型并更新视图, 以此来作为响应。在一个完美的代码世界, 当你点击一个按钮, 控制器截获该事件，更新数据的属性，并改变视图以响应新的数据。
 
-That sounds kind of "big picture", but there are some really practical reasons for controllers:
+这听起来有点"大画面", 但对于控制器来说, 也有一些真正实用的原因:
 
-- **View reuse**. Let's say we have a `PostView` which displays all the information about a `Post` (its content, author, "Likes", etc). We want to use this view on a couple of different screens, such as a main feed and a user's profile feed. To stay reusable, the `PostView` shouldn't deal with *how* it gets the information; instead, its controller should take care of that and then pass the processed data on to the view.
-- **Presentation management**. Sometimes we want a view to take up the entire screen, other times we want the same thing to appear in a modal box (think iPad vs iPhone). It doesn't make sense to write two identical view classes that differ only in presentation style, so we use the controllers to resize and animate our views accordingly.
+- **视图重用**. 比方说, 我们有一个视图 `PostView`, 用来显示所有有关帖子的信息(内容, 作者, "喜欢", 等等). 我们想在不同屏幕上使用这个这个视图, 比如一个首页Feed, 用户个人资料页的Feed. 为了保证重用性, 视图 `PostView` 不应该处理如何获取信息; 相反, 控制器才应该考虑这些, 然后将处理后的数据传递到视图.
+- **展现管理**. 有时候我们希望有一个视图占满整个屏幕, 又有些情况下我们想使用一个对话框来显示同样的内容(想象一下iPad和iPhone). 如果仅仅因为表现不同而写两个相同的视图类, 这么做是毫无意义的, 所以我们要使用控制器来调整视图的尺寸和交互.
 
-There's nothing technically stopping you from doing those things inside models and views, but it makes your code much more robust and easier to manage if you embrace MVC.
+并不是什么技术原因阻止你在模型内部和视图上做这些事情, 但是如果你遵守MVC规范的话, 它会使你的代码更健壮, 更便于管理.
 
-In iOS-land, controllers are `UIViewController`s. They come with one `view` property and methods for dealing with things like the view "lifecycle" and handling orientation changes. Don't fret, we'll get to the lifecycle business soon enough.
+在 iOS世界中, 控制器就是`UIViewController`. 它们伴随着一个 `view` 属性以及一些方法, 用来处理类似视图"生命周期"、定位发生变化等事务. 不要担心, 我们马上就会介绍生命周期的业务逻辑.
 
-So now that we know what a controller is and what it should do, what *shouldn't* it do?
+到目前为止, 我们知道了控制器是什么, 应该做什么, 那么 *不应该* 做什么呢?
 
-- Directly query or save data. It's tempting to send a bunch of HTTP requests in a controller, but those are best left to your models.
-- Complex view layouts. If you're directly adding subviews more then one level "deep" to your controller's `view`, you should rewrite your views to do it themselves. As a good rule of thumb, the only `addSubview` you should see in your controller is `self.view.addSubview`.
+- 直接查询或保存数据. 大家很容易想在控制器里面发送一批HTTP请求, 但这些最好都留给你的模型.
+- 复杂视图的布局. 如果你想添加的子视图相对当前视图层级深度过大(大于1), 你应该重构下你的视图. 作为一个好的经验法则, 在你的控制器, 唯一的 `addSubview` 应该出现在 `self.view.addSubview`.
 
-OK that's enough exposition, time for the Michael Bay action sequences.
+好了, 通篇的理论, 下面是老谋子, 苍老师的大片时间.
 
-## Everything Is Under Controllers
+## 一切尽在Controllers之中
 
-Create the `./app/controllers` directory (`mkdir ./app/controllers`) and add a `TapController.rb` file inside. Let's start to define our controller like so:
+创建目录 `./app/controllers` (`mkdir ./app/controllers`),  然后在里面创建一个 `TapController.rb` 文件. 像这样来定义我们的控制器:
 
 ```ruby
 class TapController < UIViewController
@@ -43,12 +43,11 @@ class TapController < UIViewController
   end
 end
 ```
+`viewDidLoad` 是 `UIViewController` 生命周期方法中的一个, 当`self.view`已经创建好了, 准备添加子视图的时候, 系统会调用这个方法. 现在为止, 我们仅仅让它的背景颜色置为红色, 然后就收工.
 
-`viewDidLoad` is one of those "lifecycle" methods of `UIViewController`, which is called after `self.view` has been created and is ready for subviews to be added. For now, we just make its background color red and call it a day.
+在`viewDidLoad`里面, 你 *绝对*, *必须*, *毫无疑问地* 调用 `super` 方法, 否则一些不好的事情就要发生了. 懂了吗? Cool.
 
-You *absolutely*, *must*, *without question* call `super` in `viewDidLoad`, or else bad things will happen. Got it? Cool.
-
-Now, go back to your `AppDelegate` and remove our old `UIView` code. We just need to add one line so it looks like this:
+现在, 回到你的 `AppDelegate` , 干掉之前 `UIView` 的代码. 我们只需要加一行代码, 就像这样:
 
 ```ruby
 class AppDelegate
@@ -64,17 +63,20 @@ class AppDelegate
 end
 ```
 
-See the `rootViewController=` call? The window will take the given `UIViewController` and adjust its `view`'s size to fit the window. *This* is the better way of setting up your window (as opposed to `window.addSubview` everywhere).
+看到我们调用 `rootViewController=` 了吗? window会关联给定的`UIViewController`, 并调整其视图的大小来适配整个窗口. 这是设置窗口的很好的办法（而不是到处 `window.addSubview` ）。
 
-The other new part of that line is `initWithNibName:bundle:`. Typically, this is used to load a controller from a `NIB` file. `NIB`s are created using Xcode's Interface Builder as a way of visually constructing your view. Since we aren't using Interface Builder for our controller, we can safely pass nil for both arguments.
+这行代码另一部分新面孔就是  `initWithNibName:bundle:` , 通常, 这是用来从一个 `NIB` 文件加载一个控制器. `NIB` 文件是Xcode的Interface Builder用来可视化构造你的视图. 由于我们没有为我们的控制器使用Interface Builder, 我们可以放心大胆地对这两个参数传nil值.
 
-`initWithNibName:bundle:` is also the "designated initializer" of `UIViewController`s. Whenever you want to create a controller, you *must* call this method at some point, especially in any customized initializer methods.
+`initWithNibName:bundle:` 同样也是 `UIViewController` 指定的初始化方法. 无论你什么时候想创建一个控制器, 你 *必须*
+ 在某一时刻调用这个方法, 尤其是在自定义的初始化方法.
 
-Since that's out of the way, `rake` and check it out. You should see something like this:
+
+嗯, 有点跑题了, `rake` 然后 检查一下. 你应该看到:
 
 ![first controller](images/1.png)
 
-Big things have small beginnings. Let's make one small change to our controller:
+
+Big things have small beginnings. 让我们对控制器做一个小修改:
 
 ```ruby
   def viewDidLoad
@@ -90,21 +92,22 @@ Big things have small beginnings. Let's make one small change to our controller:
   end
 ```
 
-A wild `UILabel` appeared! `UILabel`s are views meant for displaying static text with their `text` property. We create one, set its text to "Taps", and add it as a subview.
+又来了一个 `UILabel` ! `UILabel` 同样是一种视图, 根据 `text` 属性显示静态文. 我们创建了一个, 将 text 设为 "Taps", 然后置为子视图.
 
-We use the `CGRectZero` frame when we initialize it because we don't know the exact dimensions of the text on the screen yet; however, when we call `sizeToFit` the label resizes itself to perfectly fit its contents. Then we use the handy `center` property to center it in our controller's view.
 
-`rake` again for a much pleasant-looking app. It doesn't really do...anything right now, but in the next chapter we'll make it do...stuff.
+我们使用 `CGRectZero` 来初始化它, 因为我们还不知道屏幕上的文字的精确尺寸, 然而, 当我们调用`sizeToFit`, label 会调整自身大小以完全适配其内容. 然后我们得心应手地使用 `center` 属性, 让它在我们控制器的视图居中.
+
+再来一次 `rake`, 看到一个看起来不错的应用. 现在它什么都不能做, 但是下一章, 我们会给它加点功能的.
 
 ![with a label](images/2.png)
 
-## Wrap Up
+## 收工
 
-What did we learn this time?
+这回我们学到了什么?
 
-- The iOS SDK uses the Model-View-Controller paradigm.
-- `UIViewController` makes up the controller part of that, and it should be subclassed for customization.
-- Use `viewDidLoad` when to setup your controller and *don't forget to call *super*.
-- `UIWindow`s have a `rootViewController` property for displaying controllers.
+- iOS SDK 使用了 Model-View-Controller 规范.
+- `UIViewController` 构成了 Controller 部分, 并且它应该被继承为一个子类来定制你的控制器.
+- 当设置你的控制器时候, 使用 `viewDidLoad` , 并且 *不要忘了调用 *super*.
+- `UIWindow` 有一个 `rootViewController` 属性, 用来显示控制器.
 
-[Pole vault up to the next chapter and play with Container Controllers!](/4-containers)
+[撑杆跳到下一章 Container!](/4-containers)
